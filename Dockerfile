@@ -26,15 +26,17 @@ COPY nginx.conf /usr/local/nginx/conf/nginx.conf
 
 RUN /usr/local/nginx/sbin/nginx
 
+RUN mkdir noisesuppress
 
-# Get the Model for Noise Suppression
+COPY test.mp4 /noisesuppress
 
-RUN mkdir noisesuppress && \
-    cd noisesuppress && \
-    wget https://github.com/GregorR/rnnoise-models/tree/master/leavened-quisling-2018-08-31 
+COPY noisesuppress.sh /noisesuppress
 
-#Execute the Noise Suppression filter
+COPY cb.rnnn /noisesuppress
+   
+RUN cd noisesuppress && \
+    chmod +x noisesuppress.sh
 
 WORKDIR /noisesuppress
 EXPOSE 1935
-CMD ["sh","./nginx.sh"]
+CMD ["sh","./noisesuppress.sh"]
